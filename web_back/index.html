@@ -163,26 +163,26 @@
 
             // 发送ajax请求获取用户详细信息，渲染页面
             $.ajax({
-                type:'get',
-                url:'http://localhost:8000/admin/userinfo_get',
-                success:function(backData){
+                type: 'get',
+                url: 'http://localhost:8000/admin/userinfo_get',
+                success: function (backData) {
                     console.log(backData);
-                    if(backData.code == 200){
+                    if (backData.code == 200) {
                         // 渲染左边信息
-                        $('.user_info span').html('欢迎&nbsp;&nbsp;'+backData.data.username);
-                        $('.user_info img').attr('src',backData.data.user_pic);
+                        $('.user_info span').html('欢迎&nbsp;&nbsp;' + backData.data.username);
+                        $('.user_info img').attr('src', backData.data.user_pic);
                         // 渲染右边信息
-                        $('.user_center_link img').attr('src',backData.data.user_pic);
-                        
+                        $('.user_center_link img').attr('src', backData.data.user_pic);
+
                     }
-                    
+
                 }
             });
             /*
             步骤
-            1. 进入个人中心之后
-            2. 调用获取用户详细信息接口
-            3. 数据获取到之后 渲染到 页面上
+            1. 进入到首页之后
+            2. 通过用户信息接口获取用户的数据
+            3. 渲染到页面上
             */
         });
 

@@ -24,19 +24,19 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">用户名称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="李思思">
+                        <input type="text" name="username" class="form-control username" id="inputEmail3" value="李思思">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">昵称：</label>
+                    <label for="inputEmail3"  class="col-sm-2 control-label">昵称：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="思思">
+                        <input type="text" name="nickname" class="form-control nickname" id="inputEmail3" value="思思">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">邮箱：</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputEmail3" value="lisisi@126.com">
+                        <input type="text" name="email" class="form-control email" id="inputEmail3" value="lisisi@126.com">
                     </div>
                 </div>
                 
@@ -51,7 +51,7 @@
                 <div class="form-group">
                         <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
                         <div class="col-sm-4">
-                            <input type="password" class="form-control" id="inputEmail3" value="12345678">
+                            <input type="password" name="password" class="form-control password" id="inputEmail3" value="12345678">
                         </div>
                     </div>
                
@@ -65,6 +65,32 @@
         </div>
     </div>
 
+
+    <script>
+        $(function(){
+            // 发送ajax请求，获取用户详细信息
+            $.ajax({
+                type:'get',
+                url:'http://localhost:8000/admin/userinfo_get',
+                success:function(backData){
+                    // 获取数据后渲染到页面上相对应的位置
+                    // console.log(backData);
+                    for(var key in backData.data){
+                        $('input.' + key).val(backData.data[key]);
+                        $('.col-sm-10 img').attr('src',backData.data.user_pic);
+                    }
+                    
+                }
+            });
+        });
+
+        /*
+        步骤
+        1. 进入个人中心之后
+        2. 调用获取用户详细信息接口
+        3. 数据获取到之后 渲染到 页面上
+        */
+    </script>
 </body>
 
 </html>
