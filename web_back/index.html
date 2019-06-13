@@ -153,16 +153,39 @@
                     }
                 });
             });
+            /*
+            步骤:
+            1.给退出的a标签设置一个点击事件.
+            ​      取消他的默认跳转
+            2.发送ajax请求,得到数据
+            ​    如果退出成功,跳转到登录页面.
+            */
+
+            // 发送ajax请求获取用户详细信息，渲染页面
+            $.ajax({
+                type:'get',
+                url:'http://localhost:8000/admin/userinfo_get',
+                success:function(backData){
+                    console.log(backData);
+                    if(backData.code == 200){
+                        // 渲染左边信息
+                        $('.user_info span').html('欢迎&nbsp;&nbsp;'+backData.data.username);
+                        $('.user_info img').attr('src',backData.data.user_pic);
+                        // 渲染右边信息
+                        $('.user_center_link img').attr('src',backData.data.user_pic);
+                        
+                    }
+                    
+                }
+            });
+            /*
+            步骤
+            1. 进入个人中心之后
+            2. 调用获取用户详细信息接口
+            3. 数据获取到之后 渲染到 页面上
+            */
         });
 
-        /*
-        步骤:
-
-        1.给退出的a标签设置一个点击事件.
-        ​      取消他的默认跳转
-        2.发送ajax请求,得到数据
-        ​    如果退出成功,跳转到登录页面.
-        */
     </script>
 </body>
 
