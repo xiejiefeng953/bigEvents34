@@ -134,7 +134,7 @@
                 <td>{{$value.slug}}</td>
                 <td class="text-center">
                     <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});" class="btn btn-info btn-xs">编辑</a>
-                    <a href="javascript:deleteTr( {{$value.id}} );" class="btn btn-danger btn-xs">删除</a>
+                    <a href="javascript:;" data-id="{{$value.id}}" class="btn btn-danger btn-xs btn-del">删除</a>
                 </td>
             </tr>
         {{/each}}
@@ -192,7 +192,24 @@
                 4. 重新获取数据
             */
 
-            
+            $('tbody').on('click','a.btn-del',function(){
+                var id = $(this).attr('data-id');
+                var that = this;
+                // console.log(id);
+                $.ajax({
+                    type:'post',
+                    url:'http://localhost:8000/admin/category_delete',
+                    data:{
+                        id:id
+                    },
+                    success:function(backData){
+                        // console.log(backData);
+                        // post();
+                        $(that).parent().parent().remove();
+                    }
+                });
+                
+            })
             /*
             步骤:
             1.给删除按钮设置点击事件.(删除按钮是模板引擎动态生成的,所以要用委托注册)
