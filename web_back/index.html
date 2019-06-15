@@ -139,7 +139,7 @@
                 // 2.发送ajax请求,得到数据
                 $.ajax({
                     type: 'post',
-                    url: 'https://autumnfish.cn/big/admin/logout',
+                    url: 'http://localhost:8000/admin/logout',
                     success: function (backData) {
                         // 判断如果退出成功,跳转到登录页面.
                         if (backData.code == 200) {
