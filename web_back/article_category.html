@@ -73,7 +73,8 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal">新增分类</a>
+                            <a href="#" class="btn btn-success btn-new" data-toggle="modal"
+                                data-target="#addModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
@@ -90,13 +91,14 @@
                 </div>
                 <div class="modal-body">
                     <form>
+                        <input type="hidden" name="id" id="id">
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">分类名称:</label>
-                            <input type="text" class="form-control" id="recipient-name">
+                            <input type="text" name="name" class="form-control" id="recipient-name">
                         </div>
                         <div class="form-group">
                             <label for="message-text" class="control-label">分类别名:</label>
-                            <input type="text" class="form-control" id="recipient-biename">
+                            <input type="text" name="slug" class="form-control" id="recipient-biename">
                         </div>
                     </form>
                 </div>
@@ -115,7 +117,7 @@
         });
 
         $('#model_shutoff').click(function () {
-            alert('shutoff');
+            // alert('shutoff');
             $('#addModal').modal('hide');
         });
 
@@ -133,7 +135,7 @@
                 <td>{{$value.name}}</td>
                 <td>{{$value.slug}}</td>
                 <td class="text-center">
-                    <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});" class="btn btn-info btn-xs">编辑</a>
+                    <a href="javascript:;" data-id="{{$value.id}}" class="btn btn-info btn-xs btn-edit">编辑</a>
                     <a href="javascript:;" data-id="{{$value.id}}" class="btn btn-danger btn-xs btn-del">删除</a>
                 </td>
             </tr>
@@ -164,19 +166,40 @@
 
             $('#model_add').click(function () {
                 // alert('add');
-                var recipient_name = $('#recipient-name').val();
-                var recipient_biename = $('#recipient-biename').val();
-                $.ajax({
-                    type: 'post',
-                    url: 'http://localhost:8000/admin/category_add',
-                    data: {
-                        name: recipient_name,
-                        slug: recipient_biename
-                    },
-                    success: function (backdrop) {
+                if ($('#model_add').text() == '保存') {
+                    // var recipient_name = $('#recipient-name').val();
+                    // var recipient_biename = $('#recipient-biename').val();
+                    // var id = $('#id').val();
+                    var data = $('form').serialize();
+                    $.ajax({
+                        type: 'post',
+                        url: 'http://localhost:8000/admin/category_edit',
+                        // data: {
+                        //     id: id,
+                        //     name: recipient_name,
+                        //     slug: recipient_biename
+                        // },
+                        data:data,
+                        success: function (backData) {
+                            console.log(backData);
+                            post();
+                        }
+                    });
+                } else {
+                    var recipient_name = $('#recipient-name').val();
+                    var recipient_biename = $('#recipient-biename').val();
+                    $.ajax({
+                        type: 'post',
+                        url: 'http://localhost:8000/admin/category_add',
+                        data: {
+                            name: recipient_name,
+                            slug: recipient_biename
+                        },
+                        success: function (backdrop) {
 
-                    }
-                });
+                        }
+                    });
+                }
                 $('#addModal').modal('hide');
                 post();
             });
@@ -192,24 +215,24 @@
                 4. 重新获取数据
             */
 
-            $('tbody').on('click','a.btn-del',function(){
+            $('tbody').on('click', 'a.btn-del', function () {
                 var id = $(this).attr('data-id');
                 var that = this;
                 // console.log(id);
                 $.ajax({
-                    type:'post',
-                    url:'http://localhost:8000/admin/category_delete',
-                    data:{
-                        id:id
+                    type: 'post',
+                    url: 'http://localhost:8000/admin/category_delete',
+                    data: {
+                        id: id
                     },
-                    success:function(backData){
+                    success: function (backData) {
                         // console.log(backData);
                         // post();
                         $(that).parent().parent().remove();
                     }
                 });
-                
-            })
+
+            });
             /*
             步骤:
             1.给删除按钮设置点击事件.(删除按钮是模板引擎动态生成的,所以要用委托注册)
@@ -217,7 +240,45 @@
             3.发送ajax请求,删除这条数据
             ​	删除成功要重新渲染数据:
             ​	        我们用了一个投机的方式,直接把这一条数据给从dom树移除.
-            */ 
+            */
+
+            $('.btn-new').on('click', function (e) {
+                e.preventDefault();
+                $('.modal-title').text('新增分类');
+                $('#model_add').text('新增').removeClass('btn-success');
+                $('#recipient-name').val('');
+                $('#recipient-biename').val('');
+                $('#id').val('');
+
+            });
+
+            $('tbody').on('click', '.btn-edit', function (e) {
+                e.preventDefault();
+                $('.modal-title').text('修改分类名称');
+                $('#model_add').text('保存').addClass('btn-success');
+
+                var recipient_name = $(this).parent().prev().prev().text();
+                var recipient_biename = $(this).parent().prev().text();
+                var id = $(this).attr('data-id');
+                $('#recipient-name').val(recipient_name);
+                $('#recipient-biename').val(recipient_biename);
+                $('#id').val(id);
+
+
+            });
+            /*
+            步骤:
+            1.委托的方式给编辑按钮注册事件. 给编辑按钮设置自定义属性data-id保存要删除的这一条数据的id.
+            点击新增分类按钮  和点击 编辑按钮, 弹出来的模态框是同一个.
+            ​       点击编辑按钮  弹出的模态框,要修改他的title,还有他的   保存按钮名字,还有样式
+            ​       点击新增分类按钮,  弹出的模态框 里面的信息要还原.
+            2.弹出的模态框是同一个, 那点击模态框里面的 新增/保存 按钮 就要做判断(是新增还是编辑);
+            3.点击编辑, 把当前编辑的这一条数据的 分类名称  和分类 别名  显示在模态框.
+            4.点击编辑按钮,, 弹出模态框,, 点击模态框中的保存
+            ​    获取用户修改后的文章类别名称 和别名,  发送ajax请求.修改
+            */
+
+
         });
     </script>
 
