@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
     <script src="./js/template-web.js"></script>
+    <script src="./js/jquery.twbsPagination.js"></script>
 </head>
 
 <body>
@@ -322,14 +323,36 @@
                 }
             });
 
-            $('#btnSearch').on('click', function (e) {
-                e.preventDefault();
+            // $('#pagination-demo').twbsPagination({
+            //     totalPages: 35,
+            // visiblePages: 7,
+            //     onPageClick: function (event, page) {
+            //         //event  事件
+            //         //page   点击的页码
+            //         listSend(page);
+            //     }
+            // });
+            var mytotalPages = 10;
 
+            var $pagination = $('.pagination');
+            var defaultOpts = {
+                totalPages: mytotalPages,
+                visiblePages: 7,
+                first: '首页',
+                last: '尾页',
+                prev: '上一页',
+                next: '下一页',
+                onPageClick: function (event, page) {
+                    //event  事件
+                    //page   点击的页码
+                    listSend(page);
+                }
+            };
+            $pagination.twbsPagination(defaultOpts);
+
+            function listSend(page1) {
                 var type = $('#selCategory').val();
                 var state = $('#selStatus').val();
-                // console.log(type + ':' + state);
-
-
                 $.ajax({
                     type: 'get',
                     url: 'http://localhost:8000/admin/search',
@@ -337,35 +360,62 @@
                         key: '',
                         type: type,
                         state: state,
-                        page: 1,
-                        perpage: 10
+                        page: page1,
+                        perpage: 5
                     },
                     success: function (backData) {
-                        console.log(backData);
+                        // console.log(backData);
                         var resHtml = template('tem_list', backData);
                         $('tbody').html(resHtml);
+
+
+
+                        var totalPages = backData.totalPage;
+                        if (mytotalPages != totalPages) {
+                            mytotalPages = totalPages;
+                            var currentPage = $pagination.twbsPagination('getCurrentPage');
+                            $pagination.twbsPagination('destroy');
+                            $pagination.twbsPagination($.extend({}, defaultOpts, {
+                                startPage: currentPage,
+                                totalPages: totalPages
+                            }));
+                        };
                     }
                 });
+            };
+            $('#btnSearch').on('click', function (e) {
+                e.preventDefault();
+
+
+                // console.log(type + ':' + state);
+                listSend(1);
             });
             $('#btnSearch').click();
 
 
 
-            $('tbody').on('click','a.btn-del',function(){
-                 var id = $(this).attr('data-id');
+            $('tbody').on('click', 'a.btn-del', function () {
+                var id = $(this).attr('data-id');
+                var that = this;
                 //  console.log(id);
                 $.ajax({
-                    type:'get',
-                    url:'http://localhost:8000/admin/article_delete',
-                    data:{
-                        id:id
+                    type: 'get',
+                    url: 'http://localhost:8000/admin/article_delete',
+                    data: {
+                        id: id
                     },
-                    success:function(backData){
+                    success: function (backData) {
                         console.log(backData);
-                        $('#btnSearch').click();
+                        // $('#btnSearch').click();
+                        $(that).parent().parent().remove();
                     }
                 });
             });
+
+
+
+
+
         });
     </script>
 </body>
