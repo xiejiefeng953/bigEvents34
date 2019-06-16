@@ -91,7 +91,7 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <input type="hidden" name="id" id="id">
+                        <input type="hidden" name="id" id="recipient-id">
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">分类名称:</label>
                             <input type="text" name="name" class="form-control" id="recipient-name">
@@ -149,7 +149,7 @@
                     type: 'get',
                     url: 'http://localhost:8000/admin/category_search',
                     success: function (backData) {
-                        console.log(backData);
+                        // console.log(backData);
                         var resHtml = template('tem_cate', backData);
                         $('tbody').html(resHtml);
                     }
@@ -170,7 +170,10 @@
                     // var recipient_name = $('#recipient-name').val();
                     // var recipient_biename = $('#recipient-biename').val();
                     // var id = $('#id').val();
-                    var data = $('form').serialize();
+                    var formData = $('form').serialize();
+                    // var formData = new FormData($('form')[0]);
+                    // console.log(formData);
+                    
                     $.ajax({
                         type: 'post',
                         url: 'http://localhost:8000/admin/category_edit',
@@ -179,9 +182,11 @@
                         //     name: recipient_name,
                         //     slug: recipient_biename
                         // },
-                        data:data,
+                        data:formData,
+                        // contentType:false,
+                        // processData: false,
                         success: function (backData) {
-                            console.log(backData);
+                            // console.log(backData);
                             post();
                         }
                     });
@@ -248,7 +253,7 @@
                 $('#model_add').text('新增').removeClass('btn-success');
                 $('#recipient-name').val('');
                 $('#recipient-biename').val('');
-                $('#id').val('');
+                $('#recipient-id').val('');
 
             });
 
@@ -262,7 +267,7 @@
                 var id = $(this).attr('data-id');
                 $('#recipient-name').val(recipient_name);
                 $('#recipient-biename').val(recipient_biename);
-                $('#id').val(id);
+                $('#recipient-id').val(id);
 
 
             });
