@@ -287,7 +287,7 @@
                 <td class="text-center">{{$value.state}}</td>
                 <td class="text-center">
                     <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-                    <a href="javascript:deleteTr( 1005 );" class="btn btn-danger btn-xs">删除</a>
+                    <a href="javascript:;" data-id="{{$value.id}}" class="btn btn-danger btn-xs btn-del">删除</a>
                 </td>
             </tr>
         {{/each}}
@@ -327,7 +327,7 @@
 
                 var type = $('#selCategory').val();
                 var state = $('#selStatus').val();
-                console.log(type + ':' + state);
+                // console.log(type + ':' + state);
 
 
                 $.ajax({
@@ -338,7 +338,7 @@
                         type: type,
                         state: state,
                         page: 1,
-                        perpage: 6
+                        perpage: 10
                     },
                     success: function (backData) {
                         console.log(backData);
@@ -348,6 +348,24 @@
                 });
             });
             $('#btnSearch').click();
+
+
+
+            $('tbody').on('click','a.btn-del',function(){
+                 var id = $(this).attr('data-id');
+                //  console.log(id);
+                $.ajax({
+                    type:'get',
+                    url:'http://localhost:8000/admin/article_delete',
+                    data:{
+                        id:id
+                    },
+                    success:function(backData){
+                        console.log(backData);
+                        $('#btnSearch').click();
+                    }
+                });
+            });
         });
     </script>
 </body>
