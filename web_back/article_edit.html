@@ -15,6 +15,7 @@
     <script src="js/jedate/js/jedate.js"></script>
     <script src="js/tinymce/js/tinymce/tinymce.min.js"></script>
     <script src="js/tinymce/js/tinymce_setup.js"></script>
+    <script src="./js/template-web.js"></script>
 </head>
 
 <body>
@@ -24,23 +25,24 @@
         </div>
         <div class="container-fluid common_con">
             <form class="form-horizontal article_form">
+                <input type="hidden" id="idinput" value="" name="id">
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" value="文章标题文字">
+                        <input type="text" name="title" class="form-control" id="inputEmail3" value="文章标题文字">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
                     <div class="col-sm-10">
                         <img src="images/pic06.jpg" class="article_cover">
-                        <input type="file" id="exampleInputFile">
+                        <input type="file" id="exampleInputFile" name="cover">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control">
+                        <select class="form-control" name="type">
                             <option>类别一</option>
                             <option>类别二</option>
                             <option>类别三</option>
@@ -54,7 +56,7 @@
                     <div class="col-sm-4">
 
                         <div class="input-group">
-                            <input type="text" class="form-control" value="2019-05-17" id="dateinput">
+                            <input type="text" class="form-control" value="2019-05-17" id="dateinput" name="date">
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="button"
                                     onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
@@ -66,18 +68,103 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="rich_content" name="content" placeholder="文章内容" value="文章内容">
+                        <input type="text" class="form-control" id="rich_content" name="content" placeholder="文章内容"
+                            value="文章内容">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">修改</button>
+                        <button type="submit" class="btn btn-success btn-edit">修改</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
+    <script id="tem_control" type="text/html">
+        {{each data}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+
+    <script>
+
+        // console.log(window.location.search);
+        $(function () {
+            var id = window.location.search.split('=')[1];
+            // console.log(id);
+            $('#idinput').val(id);
+
+            $.ajax({
+                url: 'http://localhost:8000/admin/search',
+                data: {
+                    id: id
+                },
+                success: function (backData) {
+                    console.log(backData);
+                    $('.article_cover').attr('src', backData.data.cover)
+                    $('#inputEmail3').val(backData.data.title);
+                    // $('select.form-control').val(backData.data.type);
+                    $('#dateinput').val(backData.data.date);
+                    // tinyMCE.activeEditor.setContent(backData.data.content);
+                    // tinyMCE.setContent(backData.data.content)
+                    // tinyMCE.editors[0].setContent(backData.data.content);
+                    $('#rich_content').val(backData.data.content);
+                    
+                }
+            })
+
+            $.ajax({
+                url: 'http://localhost:8000/admin/category_search',
+                success: function (backData) {
+                    var resHtml = template('tem_control', backData);
+                    $('select.form-control').html(resHtml);
+                }
+            });
+
+            $('#exampleInputFile').on('change', function () {
+                var file = this.files[0];
+                var url = URL.createObjectURL(file);
+                $('.article_cover').attr('src', url);
+            });
+
+
+            // var content = tinyMCE.activeEditor.getContent();
+            // var title = $('#inputEmail3').val();
+            // var cover = $('.article_cover').attr('src');
+            // var type =  $('select.form-control').val();
+            // var date = $('#dateinput').val();
+
+            $('.btn-edit').on('click', function (e) {
+                e.preventDefault();
+                var formData1 = new FormData($('form')[0]);
+                // formData1.append('content', tinyMCE.activeEditor.getContent());
+                // formData1.append('id', id);
+
+                $.ajax({
+                    type: 'post',
+                    url: 'http://localhost:8000/admin/article_edit',
+                    // data: {
+                    //     id:id,
+                    //     title:title,
+                    //     cover : cover,
+                    //     type: type,
+                    //     date:date,
+                    //     content:content
+                    // },
+                    data: formData1,
+                    contentType: false,
+                    processData: false,
+                    success: function (backData) {
+                        console.log(backData);
+                        // alert('修改成功！');
+
+                    }
+                });
+            })
+
+        })
+    </script>
 </body>
 
 </html>

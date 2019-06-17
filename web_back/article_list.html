@@ -287,7 +287,7 @@
                 <td class="text-center">{{$value.date}}</td>
                 <td class="text-center">{{$value.state}}</td>
                 <td class="text-center">
-                    <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
+                    <a href="article_edit.html?id={{$value.id}}" data-id="{{$value.id}}" class="btn btn-default btn-xs btn-edit">编辑</a>
                     <a href="javascript:;" data-id="{{$value.id}}" class="btn btn-danger btn-xs btn-del">删除</a>
                 </td>
             </tr>
@@ -411,11 +411,6 @@
                     }
                 });
             });
-
-
-
-
-
         });
     </script>
 </body>
